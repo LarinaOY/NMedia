@@ -1,55 +1,34 @@
 package ru.netology.nmedia
 
 import android.os.Bundle
-import android.util.Log
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import ru.netology.nmedia.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private val post = getLoremPost()
+    private val viewModel by viewModels<MainActivityViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        reRender(binding, post)
 
-        binding.root.setOnClickListener {
-            Log.d("Olga", "root onClick")
+        viewModel.data.observe(this) {
+            reRender(binding, it)
         }
 
         binding.likeImageButton.setOnClickListener {
-
-            Log.d("Olga", "likeImageButton onClick")
-
-            if (post.likedByMe) {
-                binding.likeImageButton.setImageResource(R.drawable.ic_baseline_like_24)
-                post.likes -= 1
-            } else {
-                binding.likeImageButton.setImageResource(R.drawable.ic_baseline_liked_24)
-                post.likes += 1
-            }
-
-            post.likedByMe = !post.likedByMe
-            reRender(binding, post)
+            viewModel.onLikeClicked()
         }
 
         binding.shareImageButton.setOnClickListener {
-
-            Log.d("Olga", "shareImageButton onClick")
-
-            post.shares += 1
-            reRender(binding, post)
+            viewModel.onShareButtonClicked()
         }
 
         binding.viewsImageButton.setOnClickListener {
-
-            Log.d("Olga", "viewsImageButton onClick")
-
-            post.views += 1
-            reRender(binding, post)
+            viewModel.onViewButtonClicked()
         }
 
     }
@@ -62,6 +41,13 @@ class MainActivity : AppCompatActivity() {
         binding.likesCounter.text = doCounterformat(post.likes)
         binding.sharesCounter.text = doCounterformat(post.shares)
         binding.viewsCounter.text = doCounterformat(post.views)
+
+        if (post.likedByMe) {
+            binding.likeImageButton.setImageResource(R.drawable.ic_baseline_liked_24)
+        } else {
+            binding.likeImageButton.setImageResource(R.drawable.ic_baseline_like_24)
+        }
+
     }
 
 }
